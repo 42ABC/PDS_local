@@ -41,8 +41,26 @@ int error(Dims d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set) {
 
 }
 
-std::vector<int> search(Dims d, std::vector<std::vector<int>>& ct) {
-  std::srand(time(0)); //std::rand()%n for int between 0 and n
+//increment a pair, with carrying (a.first mod k, a.second mod n)
+void increment(Dims d, std::pair<int,int>& a) {
+  if (a.second==d.n-1 && a.first==d.k-1) {
+    a.first=0;
+    a.second=0;
+  }
+  else if (a.second == d.n-1) {
+    a.second=0;
+    a.first += 1;
+  }
+  else {
+    a.second += 1;
+  }
+ 
+
+}
+
+//go down the most possible in a single step 
+std::vector<int> steep_search(Dims d, std::vector<std::vector<int>>& ct) {
+
   std::vector<int> my_set(d.k,-1);
   std::vector<bool> is_member(d.n,0); //memory inefficient, but small domain so okay
   for (int i = 0; i < d.k; i++) {
@@ -58,46 +76,145 @@ std::vector<int> search(Dims d, std::vector<std::vector<int>>& ct) {
   int cur_error = error(d,ct,my_set);
   //std::cout << "Error of start is " << cur_error << std::endl;
 
-  int neighbor_counter = 0;
   int real_steps = 0;
 
-  while(true) {
-    //TODO adjust this stop condition (randomized so not a guarantee)
-    if (neighbor_counter >= 10*d.n*d.n) {
-    //  std::cout << "no more moves" << std::endl;
-      break;
-    }
-    int index_mutate = std::rand()%d.k;
-    int new_val = std::rand()%d.n;
+  bool changed_val = true; //makes sure we keep improving
+
+  while(cur_error > 0 && changed_val) {
+    std::cout << "mid error is " << cur_error << std::endl;
+
+    changed_val = false;
+    
+    //index and new value pair for mutation
+    std::pair<int,int> mutation(std::rand()%d.k,std::rand()%d.n);
+    //std::cout << "mutation is " << mutation.first << " " << mutation.second << std::endl;
+    std::pair<int,int> new_val(mutation.first,mutation.second);
+    increment(d,new_val);
+
     std::vector<int> cand_set(d.k,-1);
+    for (int i = 0; i < d.k; i++) {
+      cand_set[i]=my_set[i];
+    }
+    std::pair<int,int> best_change(-1,-1);
+   
+    int best_error = cur_error;
+    while (new_val != mutation) {
     //if the value we are adding is not currently in our set
-    if (!is_member[new_val]) {
-      for (int i = 0; i < d.k; i++) {
-        cand_set[i]=my_set[i];
-
-      }
-      cand_set[index_mutate]=new_val;
-      int new_error = error(d,ct,cand_set);
-      if (new_error < cur_error) {
-        is_member[my_set[index_mutate]]=0;
-        my_set[index_mutate]=new_val;
-        is_member[new_val]=1;
-        cur_error=new_error;
-        real_steps += 1;
-        if (cur_error==0) {
-          std::cout << "Found a PDS!" << std::endl;
-          std::cout << "real steps is " << real_steps << std::endl;
-          break;
+      if (!is_member[new_val.second]) {
+        
+        cand_set[new_val.first]=new_val.second;
+        int new_error = error(d,ct,cand_set); //idea: calculate error differential only (becuase full error too expensive) TODO 
+        if (new_error < best_error) {
+         // std::cout << "made an improvement" << std::endl;
+          
+          best_error = new_error;
+          best_change.first = new_val.first;
+          best_change.second = new_val.second;
+          changed_val=true;
+         
         }
-      }
+
+        cand_set[new_val.first] = my_set[new_val.first]; //reset candidate 
 
 
 
     }
-    neighbor_counter += 1;
+    increment(d,new_val);
+  //  std::cout << "incremented is " << new_val.first << " " << new_val.second << std::endl;
 
 
   }
+  if (best_error < cur_error) {
+    is_member[my_set[best_change.first]]=0;
+    my_set[best_change.first]=best_change.second;
+    is_member[best_change.first]=1;
+    cur_error = best_error;
+
+  }
+  else { //ran out of improvements
+    break;
+  }
+ 
+
+}
+
+  
+
+  return my_set;
+
+
+}
+
+std::vector<int> search(Dims d, std::vector<std::vector<int>>& ct) {
+
+  std::vector<int> my_set(d.k,-1);
+  std::vector<bool> is_member(d.n,0); //memory inefficient, but small domain so okay
+  for (int i = 0; i < d.k; i++) {
+    my_set[i]=std::rand()%d.n;
+    is_member[my_set[i]]=1;
+  }
+  // std::cout << "Start is ";
+  // for (int i = 0; i < my_set.size(); i++) {
+  //   std::cout << my_set[i] << " ";
+  // }
+  // std::cout << std::endl;
+
+  int cur_error = error(d,ct,my_set);
+  //std::cout << "Error of start is " << cur_error << std::endl;
+
+  int real_steps = 0;
+
+  bool changed_val = true; //makes sure we keep improving
+
+  while(cur_error > 0 && changed_val) {
+    std::cout << "mid error is " << cur_error << std::endl;
+
+    changed_val = false;
+    
+    //index and new value pair for mutation
+    std::pair<int,int> mutation(std::rand()%d.k,std::rand()%d.n);
+    //std::cout << "mutation is " << mutation.first << " " << mutation.second << std::endl;
+    std::pair<int,int> new_val(mutation.first,mutation.second);
+    increment(d,new_val);
+
+    std::vector<int> cand_set(d.k,-1);
+    for (int i = 0; i < d.k; i++) {
+      cand_set[i]=my_set[i];
+    }
+    while (new_val != mutation) {
+    //if the value we are adding is not currently in our set
+      if (!is_member[new_val.second]) {
+        
+        cand_set[new_val.first]=new_val.second;
+        int new_error = error(d,ct,cand_set);
+        if (new_error < cur_error) {
+         // std::cout << "made an improvement" << std::endl;
+          is_member[my_set[new_val.first]]=0;
+          my_set[new_val.first]=new_val.second;
+          is_member[new_val.first]=1;
+          cur_error=new_error;
+          real_steps += 1;
+          changed_val=true;
+          if (cur_error==0) {
+            std::cout << "Found a PDS!" << std::endl;
+            std::cout << "real steps is " << real_steps << std::endl;
+          }
+
+          break;
+        }
+
+        cand_set[new_val.first] = my_set[new_val.first]; //reset candidate 
+
+
+
+    }
+    increment(d,new_val);
+  //  std::cout << "incremented is " << new_val.first << " " << new_val.second << std::endl;
+
+
+  }
+
+}
 
   
 
@@ -108,13 +225,16 @@ std::vector<int> search(Dims d, std::vector<std::vector<int>>& ct) {
 
 int main() {
 
-  std::string fname = "table_512-d8cubed_safe.txt";
+  std::srand(time(0)); //std::rand()%n for int between 0 and n
+
+  std::string fname = "table_512-d8cubed_safe.txt";//"conv_table_64-226.txt";//
   Dims d;
   d.n=512;
   d.k=196;
   d.lam=6;
   d.mu=10;
   std::ifstream file(fname);
+
 
   std::cout << "Reading from file: " << std::endl;
 
@@ -152,9 +272,17 @@ int main() {
   // }
   // std::cout << std::endl;
 
+
+  // std::cout << "practice increment" << std::endl;
+  // std::pair<int,int> hi(17,51);
+  // std::cout << hi.first << " " << hi.second << std::endl;
+  // increment(d,hi);
+  // std::cout << hi.first << " " << hi.second << std::endl;
+  // exit(1);
+
   int NUM_TRIALS = 1000;
   for (int i = 0; i < NUM_TRIALS; i++) {
-    auto result = search(d,ct);
+    auto result = steep_search(d,ct);
     int my_error = error(d,ct,result);
     if (my_error==0) {
       std::cout << "Result is: ";
@@ -164,6 +292,7 @@ int main() {
       std::cout << std::endl;
 
     }
+    std::cout << "error: " << my_error << std::endl;
 
     if (i % 50 == 0) {
       std::cout << ".";
