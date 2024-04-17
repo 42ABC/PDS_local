@@ -5,6 +5,8 @@
 #include<unordered_set>
 #include<time.h>
 #include<chrono>
+#include<algorithm>
+#include<random>
 
 struct Dims {
   int n;
@@ -33,6 +35,26 @@ int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
 
 
 }
+
+
+//repeatedly select elements, throwing out repeats, until the set is filled
+//works well because k is not close to n
+void select_start_set(Dims& d,std::mt19937& rand_gen, std::vector<int>& my_set, std::vector<bool>& is_member) {
+ 
+
+  int new_member=0;
+
+  for (int i = 0; i < d.k; i++) {
+    //TODO is this the best way to generate a random set? <- function that generates d.k elements all at once? 
+    while (is_member[new_member]==1 || new_member==0) {
+      new_member = ((rand_gen())%(d.n-1))+1; //force no zero value
+    }
+    my_set[i]=new_member;
+    is_member[my_set[i]]=1;
+  }
+
+}
+
 
 
 //checks error of some set. Error 0 <=> PDS
@@ -80,41 +102,18 @@ void increment(Dims d, std::pair<int,int>& a) {
 
 }
 
-//return real_steps as well as PDS
-std::pair<std::vector<int>,int> search(Dims d, std::vector<std::vector<int>>& ct) {
-
-  std::vector<int> my_set(d.k,-1);
-  std::vector<bool> is_member(d.n,0); //memory inefficient, but small domain so okay
-  int new_member = 0;
-  for (int i = 0; i < d.k; i++) {
-    //TODO is this the best way to generate a random set? <- function that generates d.k elements all at once? 
-    while (is_member[new_member]==1 || new_member==0) {
-      new_member = (std::rand()%(d.n-1))+1; //force no zero value
-    }
-    my_set[i]=new_member;
-    is_member[my_set[i]]=1;
-  }
-  // std::sort(my_set.begin(),my_set.end()); //TODO REMOVE
-  // std::cout << "Start is ";
-  // for (int i = 0; i < my_set.size(); i++) {
-  //   std::cout << my_set[i] << " ";
-  // }
-  // std::cout << std::endl;
-
-  //calculate starting error, which we will transform from
-  std::vector<int> sums(d.n,0);
+//calculate starting error and put initial tallies in sums array
+int calculate_starting_error(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, std::vector<int>& sums) {
   std::vector<bool> checked(d.n,false);
+
+ //calculate starting error, which we will transform from
   for (int i = 0; i < d.k; i++) {
     for (int j = 0; j < d.k; j++) {
       //std::cout << "ct is " << ct[my_set[i]][my_set[j]] << std::endl;
       sums[ct[my_set[i]][my_set[j]]] += 1;
     }
   }
-  // std::cout << "printing sums: " << std::endl;
-  // for (int i = 0; i < d.n; i++) {
-  //   std::cout << sums[i] << " ";
-  // }
-  // std::cout << std::endl;
+ 
   int cur_error = abs(d.k-sums[0]);
   for (int i : my_set) {
     cur_error += abs(d.lam-sums[i]);
@@ -126,6 +125,48 @@ std::pair<std::vector<int>,int> search(Dims d, std::vector<std::vector<int>>& ct
     }
   }
 
+}
+
+//adjust the sums resulting in adding a new element
+//fac = 1 means adding the mutation, fac = -1 means undoing it
+void adjust_sums(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, std::vector<int>& sums, std::pair<int,int>& mutation, int fac) {
+  for (int i = 0; i < d.k; i++) {
+    if (i != mutation.first) {
+      //TODO handling nonabelian correctly? I think so
+      sums[ct[my_set[i]][mutation.second]] += fac;
+      sums[ct[mutation.second][my_set[i]]] += fac;
+      sums[ct[my_set[i]][my_set[mutation.first]]] -= fac;
+      sums[ct[my_set[mutation.first]][my_set[i]]] -= fac;
+
+    }
+  }
+
+  //mulitplying the element we are removing with itself
+  sums[ct[my_set[mutation.first]][my_set[mutation.first]]] -= fac;
+  //multiply the element we are adding with itself
+  sums[ct[mutation.second][mutation.second]] += fac;
+
+}
+
+//apply the mutation to the base potential PDS (my_set)
+void apply_mutation(std::vector<int>& my_set, std::vector<bool>& is_member, std::pair<int,int>& mutation) {
+  is_member[my_set[mutation.first]]=0;
+  my_set[mutation.first]=mutation.second;
+  is_member[mutation.first]=1;
+
+}
+
+//return real_steps as well as PDS
+std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& ct, std::mt19937& rand_gen) {
+
+  std::vector<int> my_set(d.k,-1);
+  std::vector<bool> is_member(d.n,false);
+
+  select_start_set(d,rand_gen,my_set,is_member);
+  std::vector<int> sums(d.n,0);
+
+  int cur_error = calculate_starting_error(d,ct,my_set,sums);
+
   int real_steps = 0;
 
   bool changed_val = true; //makes sure we keep improving
@@ -136,41 +177,24 @@ std::pair<std::vector<int>,int> search(Dims d, std::vector<std::vector<int>>& ct
     changed_val = false;
     
     //index and new value pair for mutation
-    std::pair<int,int> mutation(std::rand()%d.k,(std::rand()%(d.n-1)+1));
+    std::pair<int,int> initial_mutation(std::rand()%d.k,(std::rand()%(d.n-1)+1));
     //std::cout << "mutation is " << mutation.first << " " << mutation.second << std::endl;
-    //new_val.first is index, new_val.second is new group element
-    std::pair<int,int> new_val(mutation.first,mutation.second);
-    increment(d,new_val);
+    //mutation.first is index, mutation.second is new group element
+    std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
+    increment(d,mutation); //increment new val
 
-    while (new_val != mutation) {
+    while (mutation != initial_mutation) {
     //if the value we are adding is not currently in our set
-      if (!is_member[new_val.second]) {
+      if (!is_member[mutation.second]) {
 
-       
-        for (int i = 0; i < d.k; i++) {
-          if (i != new_val.first) {
-            //TODO handling nonabelian correctly?
-            sums[ct[my_set[i]][new_val.second]] += 1;
-            sums[ct[new_val.second][my_set[i]]] += 1;
-            sums[ct[my_set[i]][my_set[new_val.first]]] -= 1;
-            sums[ct[my_set[new_val.first]][my_set[i]]] -= 1;
+        adjust_sums(d,ct,my_set,sums,mutation,1);
 
-          }
-        }
-
-        //mulitplying the element we are removing with itself
-        sums[ct[my_set[new_val.first]][my_set[new_val.first]]] -= 1;
-        //multiply the element we are adding with itself
-        sums[ct[new_val.second][new_val.second]] += 1;
-
-        
         int new_error = efs(d,my_set,sums);
 
         if (new_error < cur_error) {
          // std::cout << "made an improvement" << std::endl;
-          is_member[my_set[new_val.first]]=0;
-          my_set[new_val.first]=new_val.second;
-          is_member[new_val.first]=1;
+          apply_mutation(my_set,is_member,mutation);
+          
           cur_error=new_error;
           real_steps += 1;
           changed_val=true;
@@ -182,29 +206,18 @@ std::pair<std::vector<int>,int> search(Dims d, std::vector<std::vector<int>>& ct
           break;
         }
         else {
-          //if the modification did not help, reset the sums
-          for (int i = 0; i < d.k; i++) {
-            if (i != new_val.first) {
-              //TODO handling nonabelian correctly?
-              sums[ct[my_set[i]][new_val.second]] -= 1;
-              sums[ct[new_val.second][my_set[i]]] -= 1;
-              sums[ct[my_set[i]][my_set[new_val.first]]] += 1;
-              sums[ct[my_set[new_val.first]][my_set[i]]] += 1;
-            }
-          }
-          //undoing the squared sub/add
-          sums[ct[my_set[new_val.first]][my_set[new_val.first]]] += 1;
-          sums[ct[new_val.second][new_val.second]] -= 1;
+          //undo the mutation
+          adjust_sums(d,ct,my_set,sums,mutation,-1);
         }
 
 
-    }
-    increment(d,new_val);
+      }
+    increment(d,mutation);
 
+
+    }
 
   }
-
-}
 
   
 
