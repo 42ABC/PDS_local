@@ -95,9 +95,9 @@ int main(int argc, char* argv[]) {
 
   double nonabelness = prob_commute(ct);
   // std::cout << std::endl;
-  std::cout << "group " << id << ", probcomm: " << nonabelness << " ";
+  std::cout << "group, " << id << ", probcomm, " << nonabelness << " ";
   for (int index = 0; index < errors.size(); index++) {
-    std::cout << errors[index]->name() << ": " << successes[index] << ",";
+    std::cout << errors[index]->name() << ", " << successes[index] << ",";
 
   }
   std::cout << std::endl;
