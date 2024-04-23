@@ -22,9 +22,10 @@ struct Dims {
 
 //ErrorCalc is object that holds error calculation function 
 //This interface requires efs to be defined
+//TODO define with virtual? the list of errors not working if virtual
 struct ErrorCalc {
-  virtual int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums)=0;
-  virtual std::string name() = 0;
+  virtual int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {return -1;}
+  virtual std::string name() {return "uninit";}
 };
 
 struct L1_error : ErrorCalc {
@@ -123,7 +124,7 @@ struct L4_error : ErrorCalc {
 struct LInf_error : ErrorCalc {
 
   //error from sums = efs (with inf norm)
-  int efs_inf(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
+  int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
     std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
 
     int error = abs(d.k-sums[0]);
@@ -239,7 +240,22 @@ void apply_mutation(std::vector<int>& my_set, std::vector<bool>& is_member, std:
 
 }
 
-//return real_steps as well as PDS
+//given a group, measure the probability that two elements commute, which is a measure of how nonabelian a group is (Gallian Ch24)
+double prob_commute(std::vector<std::vector<int>>& ct) {
+  int n = ct.size();
+  double num_commute = 0;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (ct[i][j]==ct[j][i]) {
+        num_commute += 1;
+      }
+    }
+  }
+  return num_commute/(n*n);
+
+}
+
+//returns PDS as well as error
 std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& ct, std::mt19937& rand_gen, ErrorCalc& e) {
 
   std::vector<int> my_set(d.k,-1);
@@ -272,7 +288,7 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
 
         adjust_sums(d,ct,my_set,sums,mutation,1);
 
-        int new_error = efs_choice(d,my_set,sums);
+        int new_error = e.efs(d,my_set,sums);
 
         if (new_error < cur_error) {
          // std::cout << "made an improvement" << std::endl;
