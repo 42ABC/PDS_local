@@ -1,7 +1,11 @@
 #include "search_tools.h"
 
+
 //g++ -o ac.out -std=c++17 search.cpp
-//./ac.out conv_table_64-226.txt 64 18 2 6
+//./ac.out group_tables/table85_1.txt 85 14 3 2 1000
+//./ac.out group_tables/table69_1.txt 85 30 11 10 1000
+//./ac.out group_tables/table69_1.txt 69 20 7 5 1000
+//./ac.out group_tables/conv_table_64-226.txt 64 18 2 6 1000
 //./ac.out conv_table_64-226.txt 64 28 12 12 1000
 //g++ -o ac.out -std=c++17 search.cpp 
 //./ac.out table_512-d8cubed_safe.txt 512 70 6 10
@@ -53,21 +57,26 @@ int main(int argc, char* argv[]) {
     //std::cout << "error: " << my_error << std::endl;
     if (my_error==0) {
       successes += 1;
-      // for (int i = 0; i < result_set.size(); i++) {
-      //   std::cout << result_set[i] << " ";
-      // }
-      // std::cout << std::endl;
+      std::cout << "PDS: " << std::endl;
+      
+      for (int i = 0; i < result_set.size(); i++) {
+        std::cout << result_set[i] << " ";
+      }
+      std::cout << std::endl;
+      break; //only 1 success per run 
 
     }
     
+    
 
-    if (i % 50 == 0) {
-      std::cout << ".";
-    }
+   
   }
   std::cout << std::endl;
+  if (successes==0) {
+    std::cout << "No PDSs found." << std::endl;
+  }
 
-  std::cout << "succ: " << successes <<", total: " << NUM_TRIALS << std::endl;
+ // std::cout << "succ: " << successes <<", total: " << NUM_TRIALS << std::endl;
 
   clock_t end_time = std::clock();
   std::cout << "time elapsed: " << (end_time-start_time)/1'000'000 << "s" << std::endl;
