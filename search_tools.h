@@ -276,7 +276,7 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
     changed_val = false;
     
     //index and new value pair for mutation
-    std::pair<int,int> initial_mutation(std::rand()%d.k,(std::rand()%(d.n-1)+1));
+    std::pair<int,int> initial_mutation(rand_gen()%d.k,(rand_gen()%(d.n-1)+1));
     //std::cout << "mutation is " << mutation.first << " " << mutation.second << std::endl;
     //mutation.first is index, mutation.second is new group element
     std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
