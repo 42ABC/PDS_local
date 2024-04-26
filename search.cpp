@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
         std::cout << result_set[i] << " ";
       }
       std::cout << std::endl;
-      break; //only 1 success per run 
+     //break; //only 1 success per run 
 
     }
     
