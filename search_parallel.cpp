@@ -3,7 +3,8 @@
 // ./ac.out ctpath n k lam mu num_tri
 // ./ac.out group_tables/table85_1.txt 85 14 3 2 1000
 // ./ac.out group_tables/conv_table_64-226.txt 64 28 12 12 1000
-//./ac.out group_tables/conv_table_64-226.txt 64 18 2 6 1000
+//./ac.out group_tables/conv_table_64-226.txt 64 18 2 6 
+// ./ac.out group_tables/table81_12.txt 81 40 19 20 10000
 #include "search_tools.h"
 
 //parlay info 
