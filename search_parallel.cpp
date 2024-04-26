@@ -15,6 +15,7 @@
 #include "parlay/delayed_sequence.h"
 #include "parlay/random.h"
 #include "parlay/internal/get_time.h"
+#include<mutex>
 
 int main(int argc, char* argv[]) {
 
