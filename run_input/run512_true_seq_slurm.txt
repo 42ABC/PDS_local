@@ -1,0 +1,23 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=trueseq_g512_d8c2p6_t1
+#SBATCH --output=Chatter_g512_d8c2p6_trueseq_t1.txt
+#SBATCH --ntasks=1
+#SBATCH --time=72:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+./s512.out group_tables/table512_D8xC2p6.txt 512 70 6 10 10000 > run_output/g512_trueseq_t1_op.txt
+# Print the simulation end date/time
+date

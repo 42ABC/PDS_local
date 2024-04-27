@@ -15,6 +15,7 @@
 //./ac.out table_144_8233_safe.txt 144 52 16 20 1000
 //./ac.out table_144_8233_safe.txt 144 33 12 6 1000
 //./ac.out group_tables/table_64_ea_safe.txt 64 28 12 12 1000
+// ./ac.out group_tables/table512_D8xC2p6.txt 512 70 6 10 100
 int main(int argc, char* argv[]) {
 
   clock_t start_time = std::clock();
