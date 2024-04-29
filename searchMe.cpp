@@ -46,18 +46,20 @@ int main(int argc, char* argv[]) {
     file2 >> t1 >> t2;
     num_groups_of_order[t1]=t2;
   }
+  file2.close();
 
 
 
   //search some of the Dims (allow this work to break up over splits)
   int startDim = atoi(argv[1]);
   int endDim = atoi(argv[2]);
+  int MULTIPLIER = atoi(argv[3]); //controls how many trials to run
 
   std::mutex m; // for even printing
 
   //Note: we load in a group more than once -- once per valid dimension, in fact -- but loading is (relatively) quick so this is okay (the parallelization is overall smoother like this)
 
-  parlay::parallel_for(0,allDims.size(),[&] (size_t dim_index) {
+  parlay::parallel_for(startDim,endDim,[&] (size_t dim_index) {
     Dims& d = allDims[dim_index];
 
     parlay::parallel_for(1,num_groups_of_order[d.n]+1,[&] (size_t g_id) {
@@ -65,29 +67,34 @@ int main(int argc, char* argv[]) {
 
       std::ifstream g_file("tablesAll/table" + std::to_string(d.n) + "_" + std::to_string(g_id) + ".txt");
 
+      g_file >> t1 >> t2; //heading info
+
 
       std::vector<std::vector<int>> ct(d.n,std::vector<int>(d.n,0)); //conv table
       int temp;
       for (int i = 0; i < d.n; i++) {
         for (int j = 0; j < d.n; j++) {
-          file >> temp;
+          g_file >> temp;
         
           ct[i][j] = temp - 1; //for zero indexing
         }
 
       }
+      g_file.close();
+
 
 
       std::random_device rd;
       std::mt19937 rand_gen(rd());
       L2_error e = L2_error(); //instantiate to L2 error 
 
-      int NUM_TRIALS = 5 * d.n * d.n; //more trials for higher order groups
+      int NUM_TRIALS = MULTIPLIER * d.n * d.n; //more trials for higher order groups
       bool found_success = false;
       for (int i = 0; i < NUM_TRIALS; i++) {
         auto result_pair = search(d,ct,rand_gen,e);
         auto result_set = result_pair.first;
         int my_error = result_pair.second;  //use the incremental error calculated in the search already
+        //my_error = error(d,ct,result_set,e);
         //std::cout << "error: " << my_error << std::endl;
         if (my_error==0) {
           found_success = true;
@@ -95,11 +102,11 @@ int main(int argc, char* argv[]) {
           m.lock();
           std::cout << "PDS(" << d.n << "," << d.k << "," << d.lam << "," << d.mu <<")" << " SmGrp(" << d.n << "," << g_id << "): ";
           
-          for (int i = 0; i < result_set.size(); i++) {
-            std::cout << result_set[i] << " ";
+          for (int j = 0; j < result_set.size(); j++) {
+            std::cout << result_set[j] << " ";
           }
           std::cout << ".";
-          std::cout << "Tri: " << i << std::endl;
+          std::cout << "Tri: " << i+1 << std::endl;
           m.unlock();
           break; //only 1 success per run
         //break; //only 1 success per run 
