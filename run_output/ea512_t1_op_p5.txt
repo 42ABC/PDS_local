@@ -1,0 +1,2 @@
+filename is group_tables/table512_ea.txt
+n, group_id: 5303 -778256551

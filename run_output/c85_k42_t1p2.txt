@@ -1,0 +1,2 @@
+filename is group_tables/table85_1.txt
+n, group_id: 85 1
