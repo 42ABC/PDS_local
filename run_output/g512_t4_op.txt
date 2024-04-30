@@ -1,6 +1,0 @@
-filename is group_tables/table512_D8xC2p6.txt
-n, group_id: 512 8222222
-
-No PDSs found from 2000000 trials.
-parlay timer 143690
-time elapsed: 5729214s

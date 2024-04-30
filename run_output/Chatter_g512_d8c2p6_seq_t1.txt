@@ -1,5 +1,0 @@
-Fri Apr 26 15:52:38 EDT 2024
-Use just one thread, test comparison
-I ran on:
-spdr02
-Fri Apr 26 23:22:57 EDT 2024

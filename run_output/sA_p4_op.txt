@@ -1,3 +1,0 @@
-Program started
-Opened all dims file
-PDS(120,35,10,10) SmGrp(120,1): None in Tri: 72000
