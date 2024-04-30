@@ -47,12 +47,9 @@ int main(int argc, char* argv[]) {
 
   }
 
-
-  
-
  
 
-  L1_error e = L1_error(); //instantiate to L1 error 
+  L2_error e = L2_error(); //instantiate to L1 error 
 
   int NUM_TRIALS = atoi(argv[6]);
   bool success = false;
