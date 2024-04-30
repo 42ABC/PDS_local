@@ -236,7 +236,7 @@ void adjust_sums(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& m
 void apply_mutation(std::vector<int>& my_set, std::vector<bool>& is_member, std::pair<int,int>& mutation) {
   is_member[my_set[mutation.first]]=0;
   my_set[mutation.first]=mutation.second;
-  is_member[mutation.first]=1;
+  is_member[mutation.second]=1; //BUGGED in previous! 
 
 }
 
