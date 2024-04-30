@@ -53,8 +53,12 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < NUM_TRIALS; i++) {
     auto result_pair = search(d,ct,rand_gen,e);
     auto result_set = result_pair.first;
-    int num_steps = result_pair.second;
-    int my_error = error(d,ct,result_set,e);
+    int my_error = result_pair.second;
+    //int true_error = error(d,ct,result_set,e);
+    // if (num_steps != my_error) { //sanity check
+    //   std::cout << "WElP " << std::endl;
+    //   exit(52);
+    // }
     //std::cout << "error: " << my_error << std::endl;
     if (my_error==0) {
       successes += 1;
@@ -77,7 +81,7 @@ int main(int argc, char* argv[]) {
     std::cout << "No PDSs found from trials: " << NUM_TRIALS << std::endl;
   }
 
- // std::cout << "succ: " << successes <<", total: " << NUM_TRIALS << std::endl;
+  std::cout << "succ: " << successes <<", total: " << NUM_TRIALS << std::endl;
 
   clock_t end_time = std::clock();
   std::cout << "time elapsed: " << (end_time-start_time)/1'000'000 << "s" << std::endl;
