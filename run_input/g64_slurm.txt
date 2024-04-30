@@ -17,7 +17,7 @@ date
 
 
 cd /home/ab5bd/pds_folder/PDS_local
-g++ -o s64par.out -std=c++17 -pthread -I parlaylib/include
+g++ -o s64par.out -std=c++17 -pthread -I parlaylib/include search64_par.cpp
 
 ./s64par.out tables64 64 18 2 6 10000 267 > run_output/G64_Er_op.txt
 

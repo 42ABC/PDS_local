@@ -1,6 +1,0 @@
-filename is group_tables/table_512_ea.txt
-n, group_id: 512 222222222
-
-No PDSs found from 300000 trials.
-parlay timer 19169.8
-time elapsed: 764438s

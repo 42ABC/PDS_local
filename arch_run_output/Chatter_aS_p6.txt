@@ -1,4 +1,0 @@
-Mon Apr 29 11:21:16 EDT 2024
-I ran on:
-spdr07
-slurmstepd: error: *** JOB 72903 ON spdr07 CANCELLED AT 2024-04-30T10:59:22 ***
