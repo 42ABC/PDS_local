@@ -2,7 +2,7 @@
 //./ac.out tables64 64 18 2 6 10 267
 //./ac.out tables64 64 18 2 6 10 3
 
-//./ac.out tables64 64 18 2 6 0 267
+//./ac.out tables64 64 18 2 6 100 267
 
 #include "search_tools.h"
 #include<string>
@@ -17,14 +17,11 @@ int main(int argc, char* argv[]) {
   L1_error e1;
   L2_error e2;
   L4_error e4;
-  LInf_error einf;
   std::vector<ErrorCalc*> errors;
   errors.push_back(&e1);
   errors.push_back(&e2);
   errors.push_back(&e4);
-  errors.push_back(&einf);
 
-  //std::vector<ErrorCalc*> errors = {new L1_error(),new L2_error(),new L4_error(),new LInf_error()};
 
   //TODO change 55 and 266 to # of groups to check*
   for (int id = 1; id <= num_groups; id++) {
@@ -64,7 +61,6 @@ int main(int argc, char* argv[]) {
   std::random_device rd;
   std::mt19937 rand_gen(rd());
   int NUM_TRIALS = atoi(argv[6]);
-  //std::vector<std::unique_ptr<ErrorCalc>> errors = {std::make_unique<L1_error>(),std::make_unique<L2_error>(),std::make_unique<L4_error>(),std::make_unique<LInf_error>()};
 
   std::vector<int> successes(errors.size(),0);
   for (int e_len = 0; e_len < errors.size(); e_len++) {

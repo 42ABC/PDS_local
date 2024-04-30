@@ -1,9 +1,9 @@
 #!/bin/bash
  
 
-#SBATCH --job-name=c85_k30_t1
-#SBATCH --output=Chatter_c85_k30_t1.txt
-#SBATCH --ntasks=1
+#SBATCH --job-name=G64_Er
+#SBATCH --output=run_output/Chatter_G64_Er.txt
+#SBATCH --ntasks=40
 #SBATCH --time=48:00:00
 # Print the simulation start date/time
 date
@@ -17,13 +17,9 @@ date
 
 
 cd /home/ab5bd/pds_folder/PDS_local
+g++ -o s64par.out -std=c++17 -pthread -I parlaylib/include
 
-
-./s85.out group_tables/table85_1.txt 85 30 11 10 1000000 > run_output/c85_k30_t1p1.txt
-
-date
-
-./s85.out group_tables/table85_1.txt 85 30 11 10 4000000 > run_output/c85_k30_t1p2.txt
+./s64par.out tables64 64 18 2 6 10000 267 > run_output/G64_Er_op.txt
 
 # Print the simulation end date/time
 date

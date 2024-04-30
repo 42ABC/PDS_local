@@ -1,3 +1,10 @@
+
+//https://www.win.tue.nl/~aeb/graphs/srg/srgtab1-50.html #for srg parms
+//https://people.maths.bris.ac.uk/~matyd/GroupNames/index.html #for group ids
+
+#ifndef SEARCH_TOOLS_H
+#define SEARCH_TOOLS_H
+
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -8,145 +15,8 @@
 #include<algorithm>
 #include<random>
 
-//https://www.win.tue.nl/~aeb/graphs/srg/srgtab1-50.html #for srg parms
-//https://people.maths.bris.ac.uk/~matyd/GroupNames/index.html #for group ids
-
-struct Dims {
-  int n;
-  int k;
-  int lam;
-  int mu;
-  Dims(int n, int k, int lam, int mu) : n(n),k(k),lam(lam),mu(mu) {}
-  Dims() {}
-};
-
-//ErrorCalc is object that holds error calculation function 
-//This interface requires efs to be defined
-//TODO define with virtual? the list of errors not working if virtual
-struct ErrorCalc {
-  virtual int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {return -1;}
-  virtual std::string name() {return "uninit";}
-};
-
-struct L1_error : ErrorCalc {
-
-  //error from sums = efs
-  int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
-    std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
-
-    int error = abs(d.k-sums[0]);
-    for (int i : my_set) {
-      error += abs(d.lam-sums[i]);
-      checked[i]=true;
-    }
-    for (int i = 1; i < d.n; i++) {
-      if (!checked[i]) {
-        error += abs(d.mu-sums[i]);
-      }
-    }
-    return error;
-
-
-  }
-  std::string name() {
-    return "l1";
-  }
-
-};
-struct L2_error : ErrorCalc {
-
-  //error from squared sums
-  int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
-    std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
-
-    int error = abs(d.k-sums[0]);
-    error *= error;
-    int temp = 0;
-    for (int i : my_set) {
-      temp = abs(d.lam-sums[i]);
-      error += temp*temp;
-      checked[i]=true;
-    }
-    for (int i = 1; i < d.n; i++) {
-      if (!checked[i]) {
-        temp = abs(d.mu-sums[i]);
-        error += temp * temp;
-      }
-    }
-    return error;
-
-
-  }
-
-  std::string name() {
-    return "L2";
-  }
-
-};
-
-struct L4_error : ErrorCalc {
-
-  //error from l4 error sums
-  int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
-    std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
-
-
-    int error = abs(d.k-sums[0]);
-    int temp = error*error;
-    int t2 = 0;
-
-    error = temp*temp;
-
-    for (int i : my_set) {
-      temp = abs(d.lam-sums[i]);
-      t2 = temp*temp;
-      error += t2*t2;
-      checked[i]=true;
-    }
-    for (int i = 1; i < d.n; i++) {
-      if (!checked[i]) {
-        temp = abs(d.mu-sums[i]);
-        t2 = temp*temp;
-        error += t2*t2;
-      }
-    }
-    return error;
-
-
-  }
-
-  std::string name() {
-    return "L4";
-  }
-
-};
-
-struct LInf_error : ErrorCalc {
-
-  //error from sums = efs (with inf norm)
-  int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
-    std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
-
-    int error = abs(d.k-sums[0]);
-    for (int i : my_set) {
-      error = std::max(abs(d.lam-sums[i]),error);
-      checked[i]=true;
-    }
-    for (int i = 1; i < d.n; i++) {
-      if (!checked[i]) {
-        error = std::max(abs(d.mu-sums[i]),error);
-      }
-    }
-    return error;
-
-
-  }
-
-  std::string name() {
-    return "LINF";
-  }
-
-};
+#include "dims.h"
+#include "error_calc.h"
 
 
 //repeatedly select elements, throwing out repeats, until the set is filled
@@ -161,7 +31,7 @@ void select_start_set(Dims& d,std::mt19937& rand_gen, std::vector<int>& my_set, 
       new_member = ((rand_gen())%(d.n-1))+1; //force no zero value
     }
     my_set[i]=new_member;
-    is_member[my_set[i]]=1;
+    is_member[my_set[i]]=true;
   }
 
 }
@@ -174,6 +44,7 @@ int error(Dims d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, E
       sums[ct[my_set[i]][my_set[j]]] += 1;
     }
   }
+
 
   return e.efs(d,my_set,sums);
   
@@ -207,38 +78,31 @@ int calculate_starting_error(Dims& d, std::vector<std::vector<int>>& ct, std::ve
     }
   }
  
+ 
   return e.efs(d,my_set,sums);
 
 }
 
-//adjust the sums resulting in adding a new element
-//fac = 1 means adding the mutation, fac = -1 means undoing it
+//(D-a+b)^2 = D^2-Da+Db-aD+a^2-ab+bD-ba+b^2
 void adjust_sums(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, std::vector<int>& sums, std::pair<int,int>& mutation, int fac) {
+  //-Da - aD + bD + Db
   for (int i = 0; i < d.k; i++) {
-    if (i != mutation.first) {
-      //TODO handling nonabelian correctly? I think so
-      sums[ct[my_set[i]][mutation.second]] += fac;
-      sums[ct[mutation.second][my_set[i]]] += fac;
-      sums[ct[my_set[i]][my_set[mutation.first]]] -= fac;
-      sums[ct[my_set[mutation.first]][my_set[i]]] -= fac;
+    sums[ct[my_set[i]][my_set[mutation.first]]] -= fac;
+    sums[ct[my_set[mutation.first]][my_set[i]]] -= fac;
+    sums[ct[my_set[i]][mutation.second]] += fac;
+    sums[ct[mutation.second][my_set[i]]] += fac;
 
-    }
   }
-
-  //mulitplying the element we are removing with itself
-  sums[ct[my_set[mutation.first]][my_set[mutation.first]]] -= fac;
-  //multiply the element we are adding with itself
+  //mulitplying the element we are removing with itself (a^2)
+  sums[ct[my_set[mutation.first]][my_set[mutation.first]]] += fac;
+  //multiply the element we are adding with itself (b^2)
   sums[ct[mutation.second][mutation.second]] += fac;
+  //cross multiply! (-ab - ba)
+  sums[ct[my_set[mutation.first]][mutation.second]] -= fac;
+  sums[ct[mutation.second][my_set[mutation.first]]] -= fac;
 
 }
 
-//apply the mutation to the base potential PDS (my_set)
-void apply_mutation(std::vector<int>& my_set, std::vector<bool>& is_member, std::pair<int,int>& mutation) {
-  is_member[my_set[mutation.first]]=0;
-  my_set[mutation.first]=mutation.second;
-  is_member[mutation.first]=1;
-
-}
 
 //given a group, measure the probability that two elements commute, which is a measure of how nonabelian a group is (Gallian Ch24)
 double prob_commute(std::vector<std::vector<int>>& ct) {
@@ -265,13 +129,15 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
   std::vector<int> sums(d.n,0);
 
   int cur_error = calculate_starting_error(d,ct,my_set,sums, e);
+  
 
   int real_steps = 0;
 
   bool changed_val = true; //makes sure we keep improving
+  int new_error = 0;
 
   while(cur_error > 0 && changed_val) {
-   // std::cout << "mid error is " << cur_error << std::endl;
+  
 
     changed_val = false;
     
@@ -282,17 +148,49 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
     std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
     increment(d,mutation); //increment new val
 
+    //sanity checks/tests
+    // int true_error = error(d,ct,my_set,e);
+    // if (true_error != cur_error) {
+    //   std::cout << "BAD!" <<std::endl;
+    //   exit(51);
+    // }
+    // for (int i = 0; i < d.k; i++) {
+    //   if (is_member[my_set[i]] != true) {
+    //     std::cout << "BAD IS MEMBER" << std::endl;
+    //     exit(53);
+    //   }
+    // }
+    // int test_num_mems = 0;
+    // for (int i = 0; i < d.n; i++) {
+    //   if (is_member[i]==true) test_num_mems += 1;
+    // }
+    // if (test_num_mems != d.k || my_set.size() != d.k) {
+    //   std::cout << "Bad num mems" << std::endl;
+    //   exit(54);
+    // }
+
+    //std::cout << "cur error: " << cur_error << std::endl;
+    
+
     while (mutation != initial_mutation) {
     //if the value we are adding is not currently in our set
       if (!is_member[mutation.second]) {
 
+        
+
         adjust_sums(d,ct,my_set,sums,mutation,1);
 
-        int new_error = e.efs(d,my_set,sums);
+        is_member[my_set[mutation.first]] = false;
+        is_member[mutation.second]=true;
+        new_error = e.efs_from_member(is_member,d,sums);
+
+        //std::cout << "new error? " << new_error << std::endl;
 
         if (new_error < cur_error) {
          // std::cout << "made an improvement" << std::endl;
-          apply_mutation(my_set,is_member,mutation);
+         // apply_mutation(my_set,is_member,mutation); //TAKE OUT
+          my_set[mutation.first]=mutation.second; //mutate my_set
+
           
           cur_error=new_error;
           real_steps += 1;
@@ -303,16 +201,22 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
         else {
           //undo the mutation
           adjust_sums(d,ct,my_set,sums,mutation,-1);
+          //undo the membership change
+          is_member[my_set[mutation.first]] = true;
+          is_member[mutation.second]=false;
+         
         }
 
 
       }
-    increment(d,mutation);
+      increment(d,mutation);
 
 
     }
 
   }
+
+ //std::cout << cur_error << std::endl;
 
   
 
@@ -320,3 +224,5 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
 
 
 }
+
+#endif
