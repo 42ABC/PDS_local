@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     }
     double nonabelness = prob_commute(ct); //calculate probability of 2 elements commuting
     m.lock(); //take the mutex to print out answers
-    std::cout << "group, " << id << ", probcomm, " << nonabelness << " ";
+    std::cout << "group, " << id << ", probcomm, " << nonabelness << ", ";
     for (int index = 0; index < errors.size(); index++) {
       std::cout << errors[index]->name() << ", " << successes[index] << ",";
 
