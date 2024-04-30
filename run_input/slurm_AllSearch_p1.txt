@@ -1,0 +1,23 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=aS_p1
+#SBATCH --output=run_output/Chatter_aS_p1.txt
+#SBATCH --ntasks=40
+#SBATCH --time=96:00:00
+# Print the simulation start date/time
+date
+
+# Print the node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+./sMe.out 0 48 5 > run_output/sA_p1_op.txt
+
+# Print the simulation end date/time
+date

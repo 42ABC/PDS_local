@@ -1,0 +1,36 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=ea512_1
+#SBATCH --output=run_output/Chatter_ea512_1.txt
+#SBATCH --ntasks=40
+#SBATCH --time=96:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 100 > run_output/ea512_t1_op_p1.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 1000 > run_output/ea512_t1_op_p2.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 10000 > run_output/ea512_t1_op_p3.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 100000 > run_output/ea512_t1_op_p4.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 200000 > run_output/ea512_t1_op_p5.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 300000 > run_output/ea512_t1_op_p6.txt
+date
+./s512.out group_tables/table_512_ea.txt 512 70 6 10 400000 > run_output/ea512_t1_op_p7.txt
+
+# Print the simulation end date/time
+date
