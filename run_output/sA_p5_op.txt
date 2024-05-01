@@ -1,0 +1,21 @@
+Program started
+Opened all dims file
+PDS(126,25,8,4) SmGrp(126,1): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,5): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,6): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,15): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,3): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,9): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,10): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,4): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,2): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,14): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,13): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,11): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,16): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,7): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,8): None in Tri: 79380
+PDS(126,25,8,4) SmGrp(126,12): None in Tri: 79380
+PDS(133,24,5,4) SmGrp(133,1): None in Tri: 88445
+PDS(126,45,12,18) SmGrp(126,1): None in Tri: 79380
+PDS(136,30,15,4) SmGrp(136,1): None in Tri: 92480

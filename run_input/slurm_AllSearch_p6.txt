@@ -1,9 +1,9 @@
 #!/bin/bash
  
 
-#SBATCH --job-name=aS_p1Again
-#SBATCH --output=run_output/Chatter_aS_p1_rerun.txt
-#SBATCH --ntasks=1 --cpus-per-task 10
+#SBATCH --job-name=aS_p6
+#SBATCH --output=run_output/Chatter_aS_p6.txt
+#SBATCH --ntasks=40
 #SBATCH --time=96:00:00
 # Print the simulation start date/time
 date
@@ -17,7 +17,7 @@ date
 
 
 cd /home/ab5bd/pds_folder/PDS_local
-./sMe.out 0 48 5 > run_output/sA_p1_op_rerun.txt
+./sMe.out 125 133 1 > run_output/sA_p1_op.txt
 
 # Print the simulation end date/time
 date
