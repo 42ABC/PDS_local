@@ -1,0 +1,23 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=pst_tseq
+#SBATCH --output=Chatter_pst_tseq.txt
+#SBATCH --ntasks=1
+#SBATCH --time=72:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+./s512.out group_tables/table512_D8xC2p6.txt 512 70 6 10 10000 > run_output/pst_tseq_op.txt
+# Print the simulation end date/time
+date
