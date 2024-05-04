@@ -1,0 +1,6 @@
+filename is group_tables/table_512-d8cubed_safe.txt
+n, group_id: 512 888
+
+No PDSs found from 100000 trials.
+parlay timer 11657.4
+time elapsed: 464563s

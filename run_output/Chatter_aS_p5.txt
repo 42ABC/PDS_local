@@ -1,3 +1,4 @@
 Tue Apr 30 14:38:16 EDT 2024
 I ran on:
 spdr[02-04]
+slurmstepd: error: *** JOB 73070 ON spdr02 CANCELLED AT 2024-05-04T14:38:28 DUE TO TIME LIMIT ***

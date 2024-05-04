@@ -68,3 +68,9 @@ PDS(126,45,12,18) SmGrp(126,4): None in Tri: 79380
 PDS(137,68,33,34) SmGrp(137,1): None in Tri: 93845
 PDS(126,45,12,18) SmGrp(126,6): None in Tri: 79380
 PDS(126,45,12,18) SmGrp(126,16): None in Tri: 79380
+PDS(126,45,12,18) SmGrp(126,12): None in Tri: 79380
+PDS(126,45,12,18) SmGrp(126,7): None in Tri: 79380
+PDS(135,63,28,32) SmGrp(135,1): None in Tri: 91125
+PDS(136,60,24,28) SmGrp(136,1): None in Tri: 92480
+PDS(143,70,33,35) SmGrp(143,1): None in Tri: 102245
+PDS(130,48,20,16) SmGrp(130,2): None in Tri: 84500
