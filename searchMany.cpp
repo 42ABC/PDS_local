@@ -1,3 +1,15 @@
+//Given a list of viable PDS dimensions (n,k,lambda,mu), test all groups of order n on that dimension
+
+//If it does not compile due to a parlay error, try adding -pthread option 
+//g++ -o ac.out -std=c++17 -I parlaylib/include searchMe.cpp
+//s = start index (inclusive) from dimension list
+//t = end index (exclusive) from dimension list
+//MULTIPLIER <- for each group, MULTIPLIER * n^2 trials will be run. Thus Multiplier controls how many trials are run. 
+//M n^2 trials are run because the search space is bigger for groups with higher order, and so more trials are warranted
+//./ac.out s t MULTIPLIER
+//./ac.out 0 133 5
+
+
 #include "search_tools.h"
 
 #include "parlay/parallel.h"
@@ -9,9 +21,7 @@
 #include<mutex>
 #include<algorithm>
 
-//TODO use optimization flag? 
-//g++ -o ac.out -std=c++17 -I parlaylib/include searchMe.cpp
-//./ac.out 0 133
+
 int main(int argc, char* argv[]) {
 
   std::cout << "Program started" << std::endl;
@@ -21,9 +31,9 @@ int main(int argc, char* argv[]) {
 
 
  
-  std::ifstream file("run_input/AllDims.txt");
+  std::ifstream file("run_input/AllDimsRemaining.txt"); //read in viable parameter values
 
-  std::cout << "Opened all dims file" << std::endl;
+  std::cout << "Opened all dims REMAINING file" << std::endl;
 
   int num_dims;
   file >> num_dims;
@@ -38,7 +48,7 @@ int main(int argc, char* argv[]) {
   }
   file.close();
 
-  std::ifstream file2("run_input/num_groups.txt");
+  std::ifstream file2("run_input/num_groups.txt"); //read in how many groups there are of each order
   int num_group_sizes;
   file2 >> num_group_sizes;
   std::vector<int> num_groups_of_order(num_group_sizes+1,0);
@@ -47,8 +57,6 @@ int main(int argc, char* argv[]) {
     num_groups_of_order[t1]=t2;
   }
   file2.close();
-
-
 
   //search some of the Dims (allow this work to break up over splits)
   int startDim = atoi(argv[1]);
@@ -59,15 +67,15 @@ int main(int argc, char* argv[]) {
 
   //Note: we load in a group more than once -- once per valid dimension, in fact -- but loading is (relatively) quick so this is okay (the parallelization is overall smoother like this)
 
-  parlay::parallel_for(startDim,endDim,[&] (size_t dim_index) {
+  parlay::parallel_for(startDim,endDim,[&] (size_t dim_index) { //in parallel, look at each PDS dimension tuple 
     Dims& d = allDims[dim_index];
 
-    parlay::parallel_for(1,num_groups_of_order[d.n]+1,[&] (size_t g_id) {
+    parlay::parallel_for(1,num_groups_of_order[d.n]+1,[&] (size_t g_id) { //in parallel, look at each group that could create this type of PDS
 
 
-      std::ifstream g_file("tablesAll/table" + std::to_string(d.n) + "_" + std::to_string(g_id) + ".txt");
+      std::ifstream g_file("tablesAll/table" + std::to_string(d.n) + "_" + std::to_string(g_id) + ".txt"); //read in the group table
 
-      g_file >> t1 >> t2; //heading info
+      g_file >> t1 >> t2; //table heading info
 
 
       std::vector<std::vector<int>> ct(d.n,std::vector<int>(d.n,0)); //conv table
@@ -86,20 +94,19 @@ int main(int argc, char* argv[]) {
 
       std::random_device rd;
       std::mt19937 rand_gen(rd());
-      L2_error e = L2_error(); //instantiate to L2 error 
+      L2_error e = L2_error(); //instantiate to L2 error because it works the best, per experiment
 
       int NUM_TRIALS = MULTIPLIER * d.n * d.n; //more trials for higher order groups
       bool found_success = false;
-      for (int i = 0; i < NUM_TRIALS; i++) {
-        auto result_pair = search(d,ct,rand_gen,e);
+      for (int i = 0; i < NUM_TRIALS; i++) { //for each trial
+        auto result_pair = search(d,ct,rand_gen,e); //do search
         auto result_set = result_pair.first;
         int my_error = result_pair.second;  //use the incremental error calculated in the search already
-        //my_error = error(d,ct,result_set,e);
-        //std::cout << "error: " << my_error << std::endl;
-        if (my_error==0) {
-          found_success = true;
-          std::sort(result_set.begin(),result_set.end()); //sort to be nicew
-          m.lock();
+     
+        if (my_error==0) { //if we found a PDS
+          found_success = true; //mark we found a PDS
+          std::sort(result_set.begin(),result_set.end()); //sort PDS for nicer output
+          m.lock(); //take mutex for printing
           std::cout << "PDS(" << d.n << "," << d.k << "," << d.lam << "," << d.mu <<")" << " SmGrp(" << d.n << "," << g_id << "): ";
           
           for (int j = 0; j < result_set.size(); j++) {
@@ -107,13 +114,12 @@ int main(int argc, char* argv[]) {
           }
           std::cout << ".";
           std::cout << "Tri: " << i+1 << std::endl;
-          m.unlock();
-          break; //only 1 success per run
-        //break; //only 1 success per run 
+          m.unlock(); //give back mutex
+          break; //max 1 success per parameter-group pair
 
         }
       }
-      if (!found_success) {
+      if (!found_success) { //if we found no PDSs, indicate this
         m.lock();
         std::cout << "PDS(" << d.n << "," << d.k << "," << d.lam << "," << d.mu <<")" << " SmGrp(" << d.n << "," << g_id << "): ";
         std::cout << "None in Tri: " << NUM_TRIALS << std::endl;
