@@ -1,10 +1,9 @@
-//g++ -o ac.out -std=c++17 search64.cpp
-//./ac.out tables64 64 18 2 6 10 267
-//./ac.out tables64 64 18 2 6 10 3
-
+//Search groups of order 64 for PDSs, in order to evaluate different error functions. This version of the code is parallelized for increased speed. 
+//If it does not compile due to a parlay error, try adding -pthread option 
+//g++ -o ac.out -I parlaylib/include -std=c++17 search64_par.cpp
+//./ac.out folder_with_tables n k lambda mu NUM_TRIALS num_groups_to_check
 //./ac.out tables64 64 18 2 6 100 267
 
-//g++ -o ac.out -I parlaylib/include -std=c++17 search64_par.cpp
 #include "search_tools.h"
 #include<string>
 
@@ -21,7 +20,7 @@ int main(int argc, char* argv[]) {
   int NUM_TRIALS = atoi(argv[6]);
   Dims d(atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),atoi(argv[5]));
   std::string folder = argv[1];
-  parlay::internal::timer my_timer;
+  parlay::internal::timer my_timer; //parlay (parallel library) equivalent of timer
   my_timer.start();
   //put different error calculators into array
   L1_error e1;
@@ -73,8 +72,5 @@ int main(int argc, char* argv[]) {
 
   std::cout << "total time: " << my_timer.next_time() << std::endl;
   
-
-
-
 }
 

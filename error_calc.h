@@ -1,3 +1,5 @@
+//Holds the functions that calculate the error of a given set (ie how far it is from being a PDS)
+
 #include "dims.h"
 #include<iostream>
 #include<fstream>
@@ -12,10 +14,13 @@
 #ifndef ERROR_H
 #define ERROR_H
 //ErrorCalc is object that holds error calculation function 
-//This interface requires efs to be defined
-//TODO define with virtual? the list of errors not working if virtual
 struct ErrorCalc {
+  //error from sums = efs
+  //given the target PDS dimensions, the pairwise sums of a set, and the set itself, determine the error of the set
+  //returns: an int, the error of the set
   virtual int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {return -1;}
+  //given the target PDS dimensions, the pairwise sums of a set, and the set itself in the form of a boolean is_member list, determine the error of the set
+  //returns: an int, the error of the set
   virtual int efs_from_member(std::vector<bool>& is_member, Dims& d, std::vector<int>& sums) {return -2;}
 
   virtual std::string name() {return "uninit";}
@@ -23,18 +28,17 @@ struct ErrorCalc {
 
 struct L1_error : ErrorCalc {
 
-  //error from sums = efs
   int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
-    std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
+    std::vector<bool> checked(d.n,false); 
 
-    int error = abs(d.k-sums[0]);
-    for (int i : my_set) {
-      error += abs(d.lam-sums[i]);
+    int error = abs(d.k-sums[0]); //checks how many copies of the identity are present
+    for (int i : my_set) { //for each element in the candidate set
+      error += abs(d.lam-sums[i]); //there should be lambda copies in sums
       checked[i]=true;
     }
-    for (int i = 1; i < d.n; i++) {
+    for (int i = 1; i < d.n; i++) { //for each other element
       if (!checked[i]) {
-        error += abs(d.mu-sums[i]);
+        error += abs(d.mu-sums[i]); //there should be mu copies in sums
       }
     }
     return error;
@@ -42,15 +46,14 @@ struct L1_error : ErrorCalc {
 
   }
 
-  //error from sums = efs
   int efs_from_member(std::vector<bool>& is_member, Dims& d, std::vector<int>& sums) {
 
-    int error = abs(d.k-sums[0]);
-    for (int i = 1; i < d.n; i++) {
-      if (is_member[i]) {
-        error += abs(d.lam-sums[i]);
+    int error = abs(d.k-sums[0]); //checks how many copies of the identity are present
+    for (int i = 1; i < d.n; i++) { //for each nonidentity element
+      if (is_member[i]) { //if this element is in the set, compare count against lambda
+        error += abs(d.lam-sums[i]); 
       }
-      else {
+      else { //otherwise, compare count against mu
         error += abs(d.mu-sums[i]);
       }
     }
@@ -66,33 +69,9 @@ struct L1_error : ErrorCalc {
   }
 
 };
+//because L2_error is only being used comparatively, we don't take a square root, we just use the sum of squares
 struct L2_error : ErrorCalc {
 
-  //error from squared sums
-  int efs_from_member(std::vector<bool>& is_member, Dims& d, std::vector<int>& sums) {
-
-    int error = abs(d.k-sums[0]);
-    error *= error;
-    int temp = 0;
-    for (int i = 1; i < d.n; i++) {
-      if (is_member[i]) {
-        temp = abs(d.lam-sums[i]);
-
-      }
-      else {
-        temp = abs(d.mu-sums[i]);
-
-      }
-      error += temp*temp;
-
-    }
-   
-    return error;
-
-
-  }
-
-  //error from sums = efs
   int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
     std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
 
@@ -112,9 +91,32 @@ struct L2_error : ErrorCalc {
       }
     }
     return error;
+  }
+
+  //error from squared sums
+  int efs_from_member(std::vector<bool>& is_member, Dims& d, std::vector<int>& sums) {
+
+    int error = abs(d.k-sums[0]);
+    error *= error;
+    int temp = 0;
+    for (int i = 1; i < d.n; i++) {
+      if (is_member[i]) {
+        temp = abs(d.lam-sums[i]);
+
+      }
+      else {
+        temp = abs(d.mu-sums[i]);
+
+      }
+      error += temp*temp; // takes the sum of squares instead
+
+    }
+   
+    return error;
 
 
   }
+
 
 
   std::string name() {
@@ -191,7 +193,6 @@ struct L4_error : ErrorCalc {
 
 struct LInf_error : ErrorCalc {
 
-  //error from sums = efs (with inf norm)
   int efs(Dims& d, std::vector<int>& my_set, std::vector<int>& sums) {
     std::vector<bool> checked(d.n,false); //TODO avoid repeated memory usage here? 
 
@@ -211,7 +212,6 @@ struct LInf_error : ErrorCalc {
   }
 
 
-  //error from sums = efs
   int efs_from_member(std::vector<bool>& is_member, Dims& d, std::vector<int>& sums) {
 
     int error = abs(d.k-sums[0]);
@@ -235,7 +235,6 @@ struct LInf_error : ErrorCalc {
   std::string name() {
     return "LINF";
   }
-
 
 
 };

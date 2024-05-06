@@ -1,6 +1,4 @@
-
-//https://www.win.tue.nl/~aeb/graphs/srg/srgtab1-50.html #for srg parms
-//https://people.maths.bris.ac.uk/~matyd/GroupNames/index.html #for group ids
+//Contains the actual local search function and associated helper functions
 
 #ifndef SEARCH_TOOLS_H
 #define SEARCH_TOOLS_H
@@ -19,8 +17,13 @@
 #include "error_calc.h"
 
 
+//picks the random starting set for the local search
 //repeatedly select elements, throwing out repeats, until the set is filled
 //works well because k is not close to n
+//d <- PDS dimensions
+//rand_gen <- random # generator
+//my_set <- vector in which we place the chosen elements
+//is_member <- boolean vector, where is_member[i] is true iff i \in my_set
 void select_start_set(Dims& d,std::mt19937& rand_gen, std::vector<int>& my_set, std::vector<bool>& is_member) {
  
 
@@ -36,7 +39,7 @@ void select_start_set(Dims& d,std::mt19937& rand_gen, std::vector<int>& my_set, 
 
 }
 
-//sum and error calculation in one function
+//given a set, calculate its error
 int error(Dims d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, ErrorCalc& e) {
   std::vector<int> sums(d.n,0);
   for (int i = 0; i < d.k; i++) {
@@ -63,26 +66,22 @@ void increment(Dims d, std::pair<int,int>& a) {
   else {
     a.second += 1;
   }
- 
-
 }
 
 //calculate starting error and put initial tallies in sums array
 int calculate_starting_error(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, std::vector<int>& sums, ErrorCalc& e) {
 
- //calculate starting error, which we will transform from
   for (int i = 0; i < d.k; i++) {
     for (int j = 0; j < d.k; j++) {
-      //std::cout << "ct is " << ct[my_set[i]][my_set[j]] << std::endl;
       sums[ct[my_set[i]][my_set[j]]] += 1;
     }
   }
- 
  
   return e.efs(d,my_set,sums);
 
 }
 
+//calculate the new sums array after we have swapped an element
 //(D-a+b)^2 = D^2-Da+Db-aD+a^2-ab+bD-ba+b^2
 void adjust_sums(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& my_set, std::vector<int>& sums, std::pair<int,int>& mutation, int fac) {
   //-Da - aD + bD + Db
@@ -104,14 +103,15 @@ void adjust_sums(Dims& d, std::vector<std::vector<int>>& ct, std::vector<int>& m
 }
 
 
-//given a group, measure the probability that two elements commute, which is a measure of how nonabelian a group is (Gallian Ch24)
+//Given a group, measure the probability that two elements commute, which is a measure of how nonabelian a group is 
+//See (Gallian Contemporary Abstract Algebra 8th edition, Ch24 p.311-312)
 double prob_commute(std::vector<std::vector<int>>& ct) {
   int n = ct.size();
   double num_commute = 0;
   for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      if (ct[i][j]==ct[j][i]) {
-        num_commute += 1;
+    for (int j = 0; j < n; j++) { //for each pair of elements
+      if (ct[i][j]==ct[j][i]) { //if they commute
+        num_commute += 1; //add 1 to the commute counter 
       }
     }
   }
@@ -119,84 +119,64 @@ double prob_commute(std::vector<std::vector<int>>& ct) {
 
 }
 
-//returns PDS as well as error
+//Do a trial of local search, returns the candidate set and the error of that set. The candidate set is a regular PDS iff the error is 0.
+//d <- PDS dimensions
+//ct <- Group multiplication (convolution) table
+//rand_gen <- Random number generator
+//e <- Error calculator object
 std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& ct, std::mt19937& rand_gen, ErrorCalc& e) {
 
-  std::vector<int> my_set(d.k,-1);
-  std::vector<bool> is_member(d.n,false);
+  std::vector<int> my_set(d.k,-1); //my_set is the candidate PDS (the candidate set)
+  std::vector<bool> is_member(d.n,false); //is_member[i] is true iff my_set contains i
 
-  select_start_set(d,rand_gen,my_set,is_member);
-  std::vector<int> sums(d.n,0);
+  select_start_set(d,rand_gen,my_set,is_member); //select random starting values for my_set
+  std::vector<int> sums(d.n,0); //sums is a list containing the pairwise sums of my_set. sums[i] is the number of copies of i that appears in my_set^2
 
-  int cur_error = calculate_starting_error(d,ct,my_set,sums, e);
+  int cur_error = calculate_starting_error(d,ct,my_set,sums, e); //calculate the starting error of my_set
+  
+  int real_steps = 0; //keep track of how many swaps were made
+
+  bool changed_val = true; //makes sure we keep improving -- if we don't make a swap, we are stuck, end the search
+  int new_error = 0; //holds the error of our candidate set after a potential swap 
+
+  while(cur_error > 0 && changed_val) { //while we have not found a PDS but we are still making progress
   
 
-  int real_steps = 0;
-
-  bool changed_val = true; //makes sure we keep improving
-  int new_error = 0;
-
-  while(cur_error > 0 && changed_val) {
-  
-
-    changed_val = false;
+    changed_val = false; //so far, a swap has not been implemented
     
     //index and new value pair for mutation
-    std::pair<int,int> initial_mutation(rand_gen()%d.k,(rand_gen()%(d.n-1)+1));
-    //std::cout << "mutation is " << mutation.first << " " << mutation.second << std::endl;
     //mutation.first is index, mutation.second is new group element
+    //a mutation is a swap -- the value in my_set[initial_mutation.first] will be replaced with mutation.second
+    //this is the mutation we start out with
+    //note that of the (n-1)*k possible swaps, we check all of them to see if they reduce the error EXCEPT FOR the initial mutation --
+    //future versions of the code should check the initial mutation as well, there is no reason not to
+    std::pair<int,int> initial_mutation(rand_gen()%d.k,(rand_gen()%(d.n-1)+1));
+
+    //this is the mutation (swap) we will increment as we try out different swaps
     std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
     increment(d,mutation); //increment new val
 
-    //sanity checks/tests
-    // int true_error = error(d,ct,my_set,e);
-    // if (true_error != cur_error) {
-    //   std::cout << "BAD!" <<std::endl;
-    //   exit(51);
-    // }
-    // for (int i = 0; i < d.k; i++) {
-    //   if (is_member[my_set[i]] != true) {
-    //     std::cout << "BAD IS MEMBER" << std::endl;
-    //     exit(53);
-    //   }
-    // }
-    // int test_num_mems = 0;
-    // for (int i = 0; i < d.n; i++) {
-    //   if (is_member[i]==true) test_num_mems += 1;
-    // }
-    // if (test_num_mems != d.k || my_set.size() != d.k) {
-    //   std::cout << "Bad num mems" << std::endl;
-    //   exit(54);
-    // }
-
-    //std::cout << "cur error: " << cur_error << std::endl;
-    
 
     while (mutation != initial_mutation) {
     //if the value we are adding is not currently in our set
       if (!is_member[mutation.second]) {
+        adjust_sums(d,ct,my_set,sums,mutation,1); //adjust sums by the mutation
 
-        
-
-        adjust_sums(d,ct,my_set,sums,mutation,1);
-
-        is_member[my_set[mutation.first]] = false;
+        is_member[my_set[mutation.first]] = false; //adjust is_member by the mutation
         is_member[mutation.second]=true;
-        new_error = e.efs_from_member(is_member,d,sums);
+        new_error = e.efs_from_member(is_member,d,sums); //get the new error
 
-        //std::cout << "new error? " << new_error << std::endl;
 
-        if (new_error < cur_error) {
-         // std::cout << "made an improvement" << std::endl;
-         // apply_mutation(my_set,is_member,mutation); //TAKE OUT
-          my_set[mutation.first]=mutation.second; //mutate my_set
+        if (new_error < cur_error) { //if our new error is lower
+         
+          my_set[mutation.first]=mutation.second; //make the mutation permanent 
 
           
-          cur_error=new_error;
-          real_steps += 1;
-          changed_val=true;
+          cur_error=new_error; //our current error is now new error
+          real_steps += 1; //increment the amount of steps (swaps) we've made by 1
+          changed_val=true; //set to true, we did make a swap
 
-          break;
+          break; //break as we made a swap to pick a new random initial mutation
         }
         else {
           //undo the mutation
@@ -206,23 +186,13 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
           is_member[mutation.second]=false;
          
         }
-
-
       }
-      increment(d,mutation);
-
+      increment(d,mutation); //if the mutation did not work, increment it
 
     }
+  }  
 
-  }
-
- //std::cout << cur_error << std::endl;
-
-  
-
-  return std::make_pair(my_set,cur_error);
-
-
+  return std::make_pair(my_set,cur_error); //return the candidate set and its associated error
 }
 
 #endif

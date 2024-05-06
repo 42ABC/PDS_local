@@ -1,4 +1,6 @@
-//define Dimensions struct, basis of PDS searching
+//define Dimensions struct, basis of PDS searching (dimensions = parameters)
+//https://www.win.tue.nl/~aeb/graphs/srg/srgtab1-50.html #for srg parms
+//https://people.maths.bris.ac.uk/~matyd/GroupNames/index.html #for group ids
 
 #ifndef DIMS_H
 #define DIMS_H

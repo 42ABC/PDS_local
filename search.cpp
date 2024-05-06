@@ -1,21 +1,8 @@
 #include "search_tools.h"
 
-
 //g++ -o ac.out -std=c++17 search.cpp
-//./ac.out group_tables/table85_1.txt 85 14 3 2 1000
-//./ac.out group_tables/table69_1.txt 85 30 11 10 1000
-//./ac.out group_tables/table69_1.txt 69 20 7 5 1000
-//./ac.out group_tables/conv_table_64-226.txt 64 18 2 6 1000
-//./ac.out conv_table_64-226.txt 64 28 12 12 1000
-//g++ -o ac.out -std=c++17 search.cpp 
-//./ac.out table_512-d8cubed_safe.txt 512 70 6 10
-//./ac.out table_512_ea.txt 512 70 6 10 1000
-//./ac.out table_36_c2d9_safe.txt 36 10 4 2 10000 (no exist)
-//./ac.out table_36_c2d9_safe.txt 36 21 10 15 10000
-//./ac.out table_144_8233_safe.txt 144 52 16 20 1000
-//./ac.out table_144_8233_safe.txt 144 33 12 6 1000
-//./ac.out group_tables/table_64_ea_safe.txt 64 28 12 12 1000
-// ./ac.out group_tables/table512_D8xC2p6.txt 512 70 6 10 100
+//./ac.out GROUP_FILE n k lambda mu NUM_TRIALS
+//./ac.out tables64/table226.txt 64 18 2 6 1000
 int main(int argc, char* argv[]) {
 
   clock_t start_time = std::clock();
@@ -35,7 +22,7 @@ int main(int argc, char* argv[]) {
 
   std::vector<std::vector<int>> ct(d.n,std::vector<int>(d.n,0)); //conv table
   int temp;
-  for (int i = 0; i < d.n; i++) {
+  for (int i = 0; i < d.n; i++) { //read in conv table
     for (int j = 0; j < d.n; j++) {
       file >> temp;
     
@@ -46,29 +33,24 @@ int main(int argc, char* argv[]) {
 
   std::random_device rd;
   std::mt19937 rand_gen(rd());
-  L2_error e = L2_error(); //instantiate to L1 error 
+  L2_error e = L2_error(); //choose error function here
 
   int NUM_TRIALS = atoi(argv[6]);
   int successes = 0;
-  for (int i = 0; i < NUM_TRIALS; i++) {
-    auto result_pair = search(d,ct,rand_gen,e);
-    auto result_set = result_pair.first;
-    int my_error = result_pair.second;
-    //int true_error = error(d,ct,result_set,e);
-    // if (num_steps != my_error) { //sanity check
-    //   std::cout << "WElP " << std::endl;
-    //   exit(52);
-    // }
-    //std::cout << "error: " << my_error << std::endl;
-    if (my_error==0) {
+  for (int i = 0; i < NUM_TRIALS; i++) { //for each trial
+    auto result_pair = search(d,ct,rand_gen,e); //do the search
+    auto result_set = result_pair.first; //get out the potential PDS
+    int my_error = result_pair.second; //get out the error
+   
+    if (my_error==0) { //if error is 0, we found a PDS!
       successes += 1;
-      std::cout << "PDS: " << std::endl;
+      std::cout << "PDS: " << std::endl; 
       
-      for (int i = 0; i < result_set.size(); i++) {
+      for (int i = 0; i < result_set.size(); i++) { //we print the PDS we found
         std::cout << result_set[i] << " ";
       }
       std::cout << std::endl;
-     //break; //only 1 success per run 
+      //break; //uncomment if one wants max 1 success per group
 
     }
     
