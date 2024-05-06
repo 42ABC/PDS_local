@@ -1,0 +1,24 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=hS_p2
+#SBATCH --output=run_output/Chatter_hS_p2.txt
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 40
+#SBATCH --time=240:00:00
+# Print the simulation start date/time
+date
+
+# Print the node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+./sMany.out 9 23 2 > run_output/hS_p2_op.txt
+
+# Print the simulation end date/time
+date
