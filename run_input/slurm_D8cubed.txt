@@ -1,0 +1,59 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=d8cub_1
+#SBATCH --output=run_output/Chatter_d8cub_1.txt
+#SBATCH --ntasks 1 
+#SBATCH --cpus-per-task 40
+#SBATCH --time=240:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 10000 > run_output/d8cub_t1_op_p1.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 50000  > run_output/d8cub_t1_op_p2.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p3.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p4.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p5.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p6.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p7.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p8.txt
+
+# Print the simulation end date/time
+date
+./s512.out group_tables/table_512-d8cubed_safe.txt 512 70 6 10 100000 > run_output/d8cub_t1_op_p9.txt
+
+# Print the simulation end date/time
+date
