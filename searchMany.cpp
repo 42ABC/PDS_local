@@ -31,9 +31,9 @@ int main(int argc, char* argv[]) {
 
 
  
-  std::ifstream file("run_input/HigherDims.txt"); //read in viable parameter values
+  std::ifstream file("run_input/EvenHigherDims.txt"); //read in viable parameter values
 
-  std::cout << "Opened HIGHER dims file" << std::endl;
+  std::cout << "Opened EVEN HIGHER dims file" << std::endl;
 
   int num_dims;
   file >> num_dims;
