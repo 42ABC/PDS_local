@@ -19,7 +19,7 @@ echo "Running with changed mutation increment"
 
 
 cd /home/ab5bd/pds_folder/PDS_local
-./sMany.out 9 23 2 > run_output/hS_p4_op.txt
+./sMany2.out 9 23 2 > run_output/hS_p4_op.txt
 
 # Print the simulation end date/time
 date
