@@ -119,12 +119,91 @@ double prob_commute(std::vector<std::vector<int>>& ct) {
 
 }
 
+
 //Do a trial of local search, returns the candidate set and the error of that set. The candidate set is a regular PDS iff the error is 0.
 //d <- PDS dimensions
 //ct <- Group multiplication (convolution) table
 //rand_gen <- Random number generator
 //e <- Error calculator object
 std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& ct, std::mt19937& rand_gen, ErrorCalc& e) {
+
+  std::vector<int> my_set(d.k,-1); //my_set is the candidate PDS (the candidate set)
+  std::vector<bool> is_member(d.n,false); //is_member[i] is true iff my_set contains i
+
+  select_start_set(d,rand_gen,my_set,is_member); //select random starting values for my_set
+  std::vector<int> sums(d.n,0); //sums is a list containing the pairwise sums of my_set. sums[i] is the number of copies of i that appears in my_set^2
+
+  int cur_error = calculate_starting_error(d,ct,my_set,sums, e); //calculate the starting error of my_set
+  
+  int real_steps = 0; //keep track of how many swaps were made
+
+  bool changed_val = true; //makes sure we keep improving -- if we don't make a swap, we are stuck, end the search
+  int new_error = 0; //holds the error of our candidate set after a potential swap 
+
+  while(cur_error > 0 && changed_val) { //while we have not found a PDS but we are still making progress  
+
+    changed_val = false; //so far, a swap has not been implemented
+    
+    //index and new value pair for mutation
+    //mutation.first is index, mutation.second is new group element
+    //a mutation is a swap -- the value in my_set[initial_mutation.first] will be replaced with mutation.second
+    //this is the mutation we start out with
+    //note that of the (n-1)*k possible swaps, we check all of them to see if they reduce the error EXCEPT FOR the initial mutation --
+    //future versions of the code should check the initial mutation as well, there is no reason not to
+    std::pair<int,int> initial_mutation(rand_gen()%d.k,(rand_gen()%(d.n-1)+1));
+
+    //this is the mutation (swap) we will increment as we try out different swaps
+    std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
+    bool first_time = true; //use of first time variable allows proper looping (check all (n-1)*k possible neighbors)
+
+
+    while (mutation != initial_mutation || first_time) {
+      first_time=false;
+    //if the value we are adding is not currently in our set
+      if (!is_member[mutation.second]) {
+        adjust_sums(d,ct,my_set,sums,mutation,1); //adjust sums by the mutation
+
+        is_member[my_set[mutation.first]] = false; //adjust is_member by the mutation
+        is_member[mutation.second]=true;
+        new_error = e.efs_from_member(is_member,d,sums); //get the new error
+
+
+
+        if (new_error < cur_error) { //if our new error is lower
+         
+          my_set[mutation.first]=mutation.second; //make the mutation permanent 
+
+          
+          cur_error=new_error; //our current error is now new error
+          real_steps += 1; //increment the amount of steps (swaps) we've made by 1
+          changed_val=true; //set to true, we did make a swap
+
+          break; //break as we made a swap to pick a new random initial mutation
+        }
+        else {
+          //undo the mutation
+          adjust_sums(d,ct,my_set,sums,mutation,-1);
+          //undo the membership change
+          is_member[my_set[mutation.first]] = true;
+          is_member[mutation.second]=false;
+         
+        }
+      }
+      increment(d,mutation); //if the mutation did not work, increment it
+
+    }
+  }  
+
+  return std::make_pair(my_set,cur_error); //return the candidate set and its associated error
+}
+
+//Do a trial of local search, returns the candidate set and the error of that set. The candidate set is a regular PDS iff the error is 0.
+//d <- PDS dimensions
+//ct <- Group multiplication (convolution) table
+//rand_gen <- Random number generator
+//e <- Error calculator object
+//this is the version used in most of the paper calculations: the new version (search) is better, use that instead
+std::pair<std::vector<int>,int> search_old(Dims& d, std::vector<std::vector<int>>& ct, std::mt19937& rand_gen, ErrorCalc& e) {
 
   std::vector<int> my_set(d.k,-1); //my_set is the candidate PDS (the candidate set)
   std::vector<bool> is_member(d.n,false); //is_member[i] is true iff my_set contains i
