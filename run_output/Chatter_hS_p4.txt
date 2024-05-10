@@ -1,0 +1,5 @@
+Wed May  8 14:32:28 EDT 2024
+I ran on:
+Running with changed mutation increment
+spdr08
+Fri May 10 06:05:47 EDT 2024

@@ -1,0 +1,13 @@
+Program started
+Opened EVEN HIGHER dims file
+PDS(204,63,22,18) SmGrp(204,1): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,11): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,7): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,3): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,12): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,9): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,4): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,8): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,2): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,10): None in Tri: 83232
+PDS(204,63,22,18) SmGrp(204,5): None in Tri: 83232

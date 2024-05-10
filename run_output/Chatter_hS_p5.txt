@@ -1,0 +1,6 @@
+Wed May  8 15:21:42 EDT 2024
+I ran on:
+Running with changed mutation increment
+spdr05
+/var/spool/slurm/d/job73915/slurm_script: line 23: 3375775 Segmentation fault      (core dumped) ./sMany3.out 0 29 2 > run_output/hS_p5_op.txt
+Thu May  9 07:06:40 EDT 2024
