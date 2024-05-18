@@ -284,3 +284,4 @@ PDS(232,77,36,20) SmGrp(232,4): None in Tri: 107648
 PDS(232,77,36,20) SmGrp(232,8): None in Tri: 107648
 PDS(225,96,51,33) SmGrp(225,6): None in Tri: 101250
 PDS(232,77,36,20) SmGrp(232,5): None in Tri: 107648
+PDS(225,96,51,33) SmGrp(225,3): None in Tri: 101250
