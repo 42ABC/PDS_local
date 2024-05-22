@@ -2,7 +2,7 @@
 //if does not compile (parlay error), add -pthread
 //g++ -o ac.out -std=c++17 -I parlaylib/include search_parallel.cpp
 //./ac.out ctpath n k lam mu num_trials
-//./ac.out tables64/table226 64 28 12 12 1000
+//./ac.out tables64/table226.txt 64 28 12 12 1000
 
 #include "search_tools.h"
 

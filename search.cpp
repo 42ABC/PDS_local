@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
   std::random_device rd;
   std::mt19937 rand_gen(rd());
-  L2_error e = L2_error(); //choose error function here
+  L2_error e = L2_error(); //choose error function here 
 
   int NUM_TRIALS = atoi(argv[6]);
   int successes = 0;

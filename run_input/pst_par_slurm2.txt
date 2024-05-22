@@ -1,0 +1,47 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=pst_par2
+#SBATCH --output=Chatter_pst_par2.txt
+#SBATCH --ntasks=1 
+#SBATCH --cpus-per-task 40 
+#SBATCH --time=72:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+./spar.out tablesAll/table64_267.txt 64 18 2 6 10000 > run_output/pst_par_op2_ea.txt
+./spar.out tablesAll/table64_267.txt 64 18 2 6 10000 >> run_output/pst_par_op2_ea.txt
+./spar.out tablesAll/table64_267.txt 64 18 2 6 10000 >> run_output/pst_par_op2_ea.txt
+
+./spar.out tablesAll/table64_31.txt 64 18 2 6 10000 > run_output/pst_par_op2.txt
+./spar.out tablesAll/table64_31.txt 64 18 2 6 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table64_31.txt 64 18 2 6 10000 >> run_output/pst_par_op2.txt
+
+./spar.out tablesAll/table125_4.txt 125 62 30 31 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table125_4.txt 125 62 30 31 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table125_4.txt 125 62 30 31 10000 >> run_output/pst_par_op2.txt
+
+./spar.out tablesAll/table144_68.txt 144 52 16 20 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table144_68.txt 144 52 16 20 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table144_68.txt 144 52 16 20 10000 >> run_output/pst_par_op2.txt
+
+./spar.out tablesAll/table238_4.txt 238 75 20 25 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table238_4.txt 238 75 20 25 10000 >> run_output/pst_par_op2.txt
+./spar.out tablesAll/table238_4.txt 238 75 20 25 10000 >> run_output/pst_par_op2.txt
+
+./spar.out group_tables/table512_D8xC2p6.txt 512 70 6 10 2000 >> run_output/pst_par_op2.txt
+./spar.out group_tables/table512_D8xC2p6.txt 512 70 6 10 2000 >> run_output/pst_par_op2.txt
+./spar.out group_tables/table512_D8xC2p6.txt 512 70 6 10 2000 >> run_output/pst_par_op2.txt
+
+# Print the simulation end date/time
+date
