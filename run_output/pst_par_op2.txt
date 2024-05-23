@@ -1,0 +1,75 @@
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from 10000 trials.
+parlay timer 2.68815
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from 10000 trials.
+parlay timer 2.81376
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from 10000 trials.
+parlay timer 2.6954
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from 10000 trials.
+parlay timer 55.2019
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from 10000 trials.
+parlay timer 56.0418
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from 10000 trials.
+parlay timer 54.6714
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from 10000 trials.
+parlay timer 65.2798
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from 10000 trials.
+parlay timer 65.8269
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from 10000 trials.
+parlay timer 63.4532
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from 10000 trials.
+parlay timer 307.474
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from 10000 trials.
+parlay timer 307.325
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from 10000 trials.
+parlay timer 306.904
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from 2000 trials.
+parlay timer 201.15
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from 2000 trials.
+parlay timer 205.08
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from 2000 trials.
+parlay timer 204.721

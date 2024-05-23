@@ -1,0 +1,90 @@
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 85s
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 84s
+filename is tablesAll/table64_31.txt
+n, group_id: 64 31
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 84s
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 1669s
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 1901s
+filename is tablesAll/table125_4.txt
+n, group_id: 125 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 2066s
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 2604s
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 2641s
+filename is tablesAll/table144_68.txt
+n, group_id: 144 68
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 2551s
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 13329s
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 13307s
+filename is tablesAll/table238_4.txt
+n, group_id: 238 4
+
+No PDSs found from trials: 10000
+succ: 0, total: 10000
+time elapsed: 13271s
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from trials: 2000
+succ: 0, total: 2000
+time elapsed: 9381s
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from trials: 2000
+succ: 0, total: 2000
+time elapsed: 9449s
+filename is group_tables/table512_D8xC2p6.txt
+n, group_id: 512 8222222
+
+No PDSs found from trials: 2000
+succ: 0, total: 2000
+time elapsed: 9423s
