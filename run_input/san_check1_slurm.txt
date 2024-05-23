@@ -3,7 +3,7 @@
 
 #SBATCH --job-name=san_check1
 #SBATCH --output=Chatter_san_check1.txt
-#SBATCH --ntasks=1 --cpus-per-task 40 
+#SBATCH --ntasks=1 --cpus-per-task 16
 #SBATCH --time=72:00:00
 # Print the simulation start date/time
 date
@@ -18,6 +18,6 @@ date
 
 cd /home/ab5bd/pds_folder/PDS_local
 
-./spar.out tablesAll/table147_4.txt 147 66 25 30 100000 > run_output/san_check1.txt
+./spar.out tablesAll/table147_4.txt 147 66 25 30 200000 > run_output/san_check1.txt
 # Print the simulation end date/time
 date
