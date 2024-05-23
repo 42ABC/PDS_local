@@ -1,0 +1,23 @@
+#!/bin/bash
+ 
+
+#SBATCH --job-name=san_check1
+#SBATCH --output=Chatter_san_check1.txt
+#SBATCH --ntasks=1 --cpus-per-task 40 
+#SBATCH --time=72:00:00
+# Print the simulation start date/time
+date
+
+# Print the GPU node the simulation is running on
+ echo "I ran on:"
+ cd $SLURM_SUBMIT_DIR
+ echo $SLURM_NODELIST
+
+# Load the necessary program libraries
+
+
+cd /home/ab5bd/pds_folder/PDS_local
+
+./spar.out tablesAll/table147_4.txt 147 66 25 30 100000 > run_output/san_check1.txt
+# Print the simulation end date/time
+date
