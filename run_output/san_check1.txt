@@ -1,0 +1,2 @@
+filename is tablesAll/table147_4.txt
+n, group_id: 147 4

@@ -1,0 +1,4 @@
+Thu May 23 18:44:13 EDT 2024
+I ran on:
+spdr01
+slurmstepd: error: *** JOB 77212 ON spdr01 CANCELLED AT 2024-05-23T18:55:07 ***
