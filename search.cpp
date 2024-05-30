@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
   std::random_device rd;
   std::mt19937 rand_gen(rd());
   L2_error e = L2_error(); //choose error function here 
+  double avg_error = 0;
 
   int NUM_TRIALS = atoi(argv[6]);
   int successes = 0;
@@ -41,6 +42,7 @@ int main(int argc, char* argv[]) {
     auto result_pair = search(d,ct,rand_gen,e); //do the search
     auto result_set = result_pair.first; //get out the potential PDS
     int my_error = result_pair.second; //get out the error
+    avg_error += my_error;
    
     if (my_error==0) { //if error is 0, we found a PDS!
       successes += 1;
@@ -67,6 +69,8 @@ int main(int argc, char* argv[]) {
 
   clock_t end_time = std::clock();
   std::cout << "time elapsed: " << (end_time-start_time)/1'000'000 << "s" << std::endl;
+
+  std::cout << "avg error: " << avg_error/NUM_TRIALS << std::endl;
 
 
 

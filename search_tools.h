@@ -155,9 +155,7 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
     //this is the mutation (swap) we will increment as we try out different swaps
     std::pair<int,int> mutation(initial_mutation.first,initial_mutation.second);
     bool first_time = true; //use of first time variable allows proper looping (check all (n-1)*k possible neighbors)
-    // int old_member = -1; // TODO delete
-    // int new_error2 = -1; //TODO delete
-
+   
 
     while (mutation != initial_mutation || first_time) {
       first_time=false;
@@ -167,16 +165,8 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
 
         is_member[my_set[mutation.first]] = false; //adjust is_member by the mutation
         is_member[mutation.second]=true;
-        new_error = e.efs_from_member(is_member,d,sums); //get the new error //TODO uncomment
-        // old_member = my_set[mutation.first];
-        // my_set[mutation.first]=mutation.second;//TODO delete
-        // new_error2 = error(d,ct,my_set,e); 
-        // my_set[mutation.first]=old_member;
-        // if (new_error != new_error2) {
-        //   std::cout << "BAD" << std::endl;
-        //   exit(177);
-        // }
-
+        new_error = e.efs_from_member(is_member,d,sums); //get the new error
+      
 
 
         if (new_error < cur_error) { //if our new error is lower
@@ -203,6 +193,8 @@ std::pair<std::vector<int>,int> search(Dims& d, std::vector<std::vector<int>>& c
 
     }
   }  
+  //std::cout << "real stepsN: " << real_steps << std::endl;  
+
 
   return std::make_pair(my_set,cur_error); //return the candidate set and its associated error
 }
@@ -279,7 +271,7 @@ std::pair<std::vector<int>,int> search_old(Dims& d, std::vector<std::vector<int>
       increment(d,mutation); //if the mutation did not work, increment it
 
     }
-  }  
+  }
 
   return std::make_pair(my_set,cur_error); //return the candidate set and its associated error
 }

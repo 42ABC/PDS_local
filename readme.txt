@@ -3,6 +3,8 @@ by Andrew Brady, which is being prepared for submission for publication.
 
 For the PDSs in a cleaner form, see the results folder. 
 
+Please contact me at acbrady2020 /at/ gmail with any questions/bugs.
+
 PDS = Partial Difference Set
 SRG = Strongly Regular Graph
 
@@ -84,7 +86,3 @@ Run with: python checkPDS.py
 To control the file it reads, see the line with CHANGEME in the code
 However, checkPDS.py requires that the necessary group tables be created to run, in a folder called tablesAll, with 
 the name "tableGROUPORDER_GID.txt".
-
-analyze64data.py will analyze the output from search64.cpp
-Run with: python analyze64data2.py < run_output/search64_output.txt
-(For this program, the input needs to be piped in via stdin)
