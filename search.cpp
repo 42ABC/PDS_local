@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
   int NUM_TRIALS = atoi(argv[6]);
   int successes = 0;
   for (int i = 0; i < NUM_TRIALS; i++) { //for each trial
-    auto result_pair = search(d,ct,rand_gen,e); //do the search
+    auto result_pair = search_old(d,ct,rand_gen,e); //do the search //TODO change back to search
     auto result_set = result_pair.first; //get out the potential PDS
     int my_error = result_pair.second; //get out the error
     avg_error += my_error;
