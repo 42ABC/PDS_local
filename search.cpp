@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]) {
 
   clock_t start_time = std::clock();
-
+ 
   std::string fname = argv[1];
   std::cout << "filename is " << fname << std::endl;
 
@@ -39,19 +39,22 @@ int main(int argc, char* argv[]) {
   int NUM_TRIALS = atoi(argv[6]);
   int successes = 0;
   for (int i = 0; i < NUM_TRIALS; i++) { //for each trial
-    auto result_pair = search_old(d,ct,rand_gen,e); //do the search //TODO change back to search
+    auto result_pair = search(d,ct,rand_gen,e); //do the search //TODO change back to search
     auto result_set = result_pair.first; //get out the potential PDS
     int my_error = result_pair.second; //get out the error
     avg_error += my_error;
+    //std::cout << "error is " << my_error << std::endl;
    
     if (my_error==0) { //if error is 0, we found a PDS!
       successes += 1;
       std::cout << "PDS: " << std::endl; 
       
-      for (int i = 0; i < result_set.size(); i++) { //we print the PDS we found
-        std::cout << result_set[i] << " ";
+      for (int index = 0; index < result_set.size(); index++) { //we print the PDS we found
+        std::cout << result_set[index] << " ";
+
       }
       std::cout << std::endl;
+
       //break; //uncomment if one wants max 1 success per group
 
     }
@@ -68,8 +71,8 @@ int main(int argc, char* argv[]) {
   std::cout << "succ: " << successes <<", total: " << NUM_TRIALS << std::endl;
 
   clock_t end_time = std::clock();
-  std::cout << "time elapsed: " << (end_time-start_time)/1'000'000 << "s" << std::endl;
-
+  std::cout << "time elapsed: " << (end_time-start_time)/1'000 << "ms" << std::endl;
+  
   std::cout << "avg error: " << avg_error/NUM_TRIALS << std::endl;
 
 

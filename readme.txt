@@ -1,5 +1,5 @@
 This is the README for the source code associated with the paper "New Strongly Regular Graphs Found via Local Search for Partial Difference Sets,"
-by Andrew Brady, which is being prepared for submission for publication. 
+by Andrew Brady, which has been submitted for publication. The preprint is available on arXiV here: https://arxiv.org/abs/2406.09550.
 
 For the PDSs in a cleaner form, see the results folder. 
 
@@ -36,6 +36,8 @@ search.cpp is for searching a single group for a specific type of PDS
 compile with: g++ -o ac.out -std=c++17 search.cpp
 and run with: ./ac.out GROUP_FILE n k lambda mu NUM_TRIALS
 for example: ./ac.out group_tables/table64_226.txt 64 18 2 6 1000
+
+Warning: the std::clock time may not report precisely accurate time, use at your discretion. 
 
 search_parallel.cpp is for searching a single group for a specific type of PDS, but using shared memory parallelism with parlay. This is only effective at reducing runtime on a multicore machine.
 Compile and run with:
