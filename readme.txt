@@ -1,5 +1,5 @@
 This is the README for the source code associated with the paper "New Strongly Regular Graphs Found via Local Search for Partial Difference Sets,"
-by Andrew Brady, which has been submitted for publication. The preprint is available on arXiV here: https://arxiv.org/abs/2406.09550.
+by Andrew Brady, which has been published in the Electronic Journal for Combinatorics (Volume 32, Issue 1, 2025) (doi.org/10.37236/13296). 
 
 For the PDSs in a cleaner form, see the results folder. 
 
